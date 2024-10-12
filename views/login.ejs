@@ -1,0 +1,21 @@
+<%- include('includes/header', { title: 'Вход', user: req.session.user }) %>
+<h1>Вход</h1>
+
+<% if (errors.length > 0) { %>
+  <ul>
+    <% errors.forEach(error => { %>
+      <li><%= error.msg %></li>
+    <% }) %>
+  </ul>
+<% } %>
+
+<form action="/login" method="POST">
+  <label for="username">Имя пользователя *</label>
+  <input type="text" name="username" id="username" required /><br />
+
+  <label for="password">Пароль *</label>
+  <input type="password" name="password" id="password" required /><br />
+
+  <button type="submit">Войти</button>
+</form>
+<%- include('includes/footer') %>

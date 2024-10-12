@@ -1,0 +1,9 @@
+<%- include('includes/header', { title: 'Панель пользователя', user: req.session.user }) %>
+<h1>Добро пожаловать, <%= user.displayName || user.username %>!</h1>
+<p>Ваш email: <%= user.email %></p>
+<% if (user.avatar) { %>
+  <img src="/uploads/<%= user.avatar %>" alt="Аватарка" width="150" />
+<% } else { %>
+  <p>У вас нет аватарки.</p>
+<% } %>
+<%- include('includes/footer') %>
