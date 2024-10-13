@@ -10,73 +10,73 @@
     <div class="register-container">
         <h2>Создать учётную запись</h2>
         
-        <form action="/register" method="POST">
-          <label for="email">E-mail *</label>
-          <input type="email" id="email" name="email" required>
+        <form action="/register" method="POST" onsubmit="return checkPasswords()">
+            <label for="email">E-mail</label>
+            <input type="email" name="email" placeholder="E-mail" required>
           
-          <label for="display-name">Отображаемое имя</label>
-          <input type="text" id="display-name" name="display-name" onfocus="showDescription()" onblur="hideDescription()">
-          <p class="description" id="description-text">Это имя увидят другие пользователи. Можно добавлять специальные символы и эмодзи.</p>
+            <label for="display-name">Отображаемое имя</label>
+            <input type="text" id="display-name" name="display-name" placeholder="Отображаемое имя" onfocus="showDescription()" onblur="hideDescription()">
+            <p class="description" id="description-text">Это имя увидят другие пользователи. Можно добавлять специальные символы и эмодзи.</p>
           
-          <label for="username">Имя пользователя *</label>
-          <input type="text" id="username" name="username" required>
+            <label for="username">Имя пользователя</label>
+            <input type="text" name="username" placeholder="Имя пользователя" required>
           
-          <label for="password">Пароль *</label>
-          <input type="password" id="password" name="password" required>
+            <label for="password">Пароль</label>
+            <input type="password" id="password" name="password" placeholder="Пароль" required>
+            
+            <label for="confirm-password">Подтвердите пароль</label>
+            <input type="password" id="confirm-password" name="confirm-password" placeholder="Подтвердите пароль" required>
+          
+            <label for="dob">Дата рождения</label>
+            <div class="dob-container">
+                <select name="day" id="day" required>
+                <option value="" disabled selected>День</option>
+                <script>
+                    for (let i = 1; i <= 31; i++) {
+                    document.write('<option value="' + i + '">' + i + '</option>');
+                    }
+                </script>
+                </select>
 
-          <label for="password">Подтвердите пароль *</label>
-          <input type="password" id="password" name="password" required>
+                <select name="month" id="month" required>
+                <option value="" disabled selected>Месяц</option>
+                <option value="1">Январь</option>
+                <option value="2">Февраль</option>
+                <option value="3">Март</option>
+                <option value="4">Апрель</option>
+                <option value="5">Май</option>
+                <option value="6">Июнь</option>
+                <option value="7">Июль</option>
+                <option value="8">Август</option>
+                <option value="9">Сентябрь</option>
+                <option value="10">Октябрь</option>
+                <option value="11">Ноябрь</option>
+                <option value="12">Декабрь</option>
+                </select>
+
+                <select name="year" id="year" required>
+                <option value="" disabled selected>Год</option>
+                <script>
+                    const currentYear = new Date().getFullYear();
+                    for (let i = currentYear; i >= 1900; i--) {
+                    document.write('<option value="' + i + '">' + i + '</option>');
+                    }
+                </script>
+                </select>
+            </div>
           
-          <label for="dob">Дата рождения *</label>
-          <div class="dob-container">
-            <select name="day" id="day" required>
-              <option value="" disabled selected>День</option>
-              <!-- Дни от 1 до 31 -->
-              <script>
-                for (let i = 1; i <= 31; i++) {
-                  document.write('<option value="' + i + '">' + i + '</option>');
-                }
-              </script>
-            </select>
+            <div class="checkbox-container">
+                <input type="checkbox" id="newsletter" name="newsletter">
+                <label for="newsletter">Я не против получать электронные письма</label>
+            </div>
           
-            <select name="month" id="month" required>
-              <option value="" disabled selected>Месяц</option>
-              <option value="1">Январь</option>
-              <option value="2">Февраль</option>
-              <option value="3">Март</option>
-              <option value="4">Апрель</option>
-              <option value="5">Май</option>
-              <option value="6">Июнь</option>
-              <option value="7">Июль</option>
-              <option value="8">Август</option>
-              <option value="9">Сентябрь</option>
-              <option value="10">Октябрь</option>
-              <option value="11">Ноябрь</option>
-              <option value="12">Декабрь</option>
-            </select>
-          
-            <select name="year" id="year" required>
-              <option value="" disabled selected>Год</option>
-              <script>
-                const currentYear = new Date().getFullYear();
-                for (let i = currentYear; i >= 1900; i--) {
-                  document.write('<option value="' + i + '">' + i + '</option>');
-                }
-              </script>
-            </select>
-          </div>
-          
-          <div class="checkbox-container">
-            <input type="checkbox" id="newsletter" name="newsletter">
-            <label for="newsletter">Я не против получать электронные письма</label>
-          </div>
-          
-          <button type="submit">Продолжить</button>
+            <button type="submit">Продолжить</button>
+            <p id="error-message" style="color: red; display: none;">Пароли не совпадают!</p>
         </form>
         
         <p class="terms">Регистрируясь, вы соглашаетесь с <a href="#">Условиями Использования</a> и <a href="#">Политикой Конфиденциальности</a>.</p>
         <p class="login-link">Уже зарегистрированы? <a href="/login">Вход</a></p>
       </div>     
-      <script src="/static/register/register.js"></script>
+      <script src="/register/register.js"></script>
 </body>
 </html>
