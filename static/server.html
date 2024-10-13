@@ -3,40 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Two Frames Layout</title>
     <link rel="stylesheet" href="/server/server.css">
-    <title>Server</title>
 </head>
 <body>
-    <div id="container" class="container">
-        <div id="sidebar" class="sidebar">
-            <iframe id="sidebarFrame" src="/sidebar.html"></iframe>
+    <div class="container">
+        <div class="sidebar-container">
+            <iframe src="/sidebar.html"></iframe>
         </div>
-        <div class="main-content">
-            <iframe id="mainFrame"></iframe>
+        <div class="home-container">
+            <iframe src="/home.html"></iframe>
         </div>
     </div>
-
-    <script>
-        // Получаем текущий путь
-        const currentPath = window.location.pathname;
-
-        const container = document.getElementById('container');
-        const sidebar = document.getElementById('sidebar');
-        const mainFrame = document.getElementById('mainFrame');
-
-        // Логика для отображения контента в зависимости от маршрута
-        if (currentPath === '/home/') {
-            sidebar.style.display = 'block'; // Показываем sidebar
-            mainFrame.src = '/home.html'; // Загружаем home в основной iframe
-        } else if (currentPath === '/login/') {
-            sidebar.classList.add('hidden'); // Скрываем sidebar
-            container.classList.add('full-page'); // Делаем основной блок на всю страницу
-            mainFrame.src = '/login.html'; // Загружаем login
-        } else if (currentPath === '/register/') {
-            sidebar.classList.add('hidden'); // Скрываем sidebar
-            container.classList.add('full-page'); // Делаем основной блок на всю страницу
-            mainFrame.src = '/register.html'; // Загружаем register
-        }
-    </script>
 </body>
 </html>
