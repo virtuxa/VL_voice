@@ -77,7 +77,7 @@ app.post('/register', async (req, res) => {
 
 // Адресация для /home
 app.get(['/home'], (req, res) => {
-    res.sendFile(path.join(__dirname, 'static', 'server.html'));
+    res.sendFile(path.join(__dirname, 'static', 'home.html'));
 });
 
 // Адресация для /login
