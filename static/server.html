@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Two Frames Layout</title>
+    <link rel="stylesheet" href="/server/server.css">
+</head>
+<body>
+    <div class="container">
+        <div class="firstbar">
+            <div class="container">
+                <a href="#" class="home-link" onclick="loadContent('/home.html'); return false;">
+                    <img src="/images/ui/home.png" alt="Home Icon" class="home-icon">
+                </a>
+              
+            </div>
+        </div>
+
+        <div class="secondbar">
+            <div class="sidebar">
+                <h1>sidebar</h1>
+            </div>
+            <div class="userbar">
+                <h1>userbar</h1>
+            </div>
+        </div>
+
+        <div class="thirdbar">
+
+        </div>
+    </div>
+    <script src="/server/server.js"></script>
+
+</body>
+</html>

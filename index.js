@@ -77,7 +77,7 @@ app.post('/register', async (req, res) => {
 
 // Адресация для /home
 app.get(['/home'], (req, res) => {
-    res.sendFile(path.join(__dirname, 'static', 'home.html'));
+    res.sendFile(path.join(__dirname, 'static', 'server.html'));
 });
 
 // Адресация для /login
@@ -89,6 +89,17 @@ app.get(['/login'], (req, res) => {
 app.get(['/register'], (req, res) => {
     res.sendFile(path.join(__dirname, 'static', 'register.html'));
 });
+
+// -------------------------------------------------------
+
+function loadContent(page) {
+    fetch(page)
+        .then(response => response.text())
+        .then(html => {
+            document.querySelector('.thirdbar').innerHTML = html;
+        })
+        .catch(error => console.log('Ошибка загрузки контента:', error));
+}
 
 // -------------------------------------------------------
 
