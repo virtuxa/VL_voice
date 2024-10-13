@@ -4,12 +4,27 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LOGIN</title>
+    <link rel="stylesheet" href="/login/login.css">
 </head>
 <body>
-    <div class="container">
-        <div class="main-content">
-            <h1> LOGIN </h1>
-        </div>
-    </div>
+    <div class="login-container">
+        <h2>Добро пожаловать!</h2>
+        <p>Мы так рады видеть вас!</p>
+        
+        <form action="/login" method="POST">
+          <label for="email">Адрес электронной почты или номер телефона *</label>
+          <input type="text" id="email" name="email" required>
+          
+          <label for="password">Пароль *</label>
+          <input type="password" id="password" name="password" required>
+          
+          <a href="#">Забыли пароль?</a>
+          
+          <button type="submit">Вход</button>
+        </form>
+        
+        <p>Нужна учётная запись? <a href="/register">Зарегистрироваться</a></p>
+      </div>
+      
 </body>
 </html>

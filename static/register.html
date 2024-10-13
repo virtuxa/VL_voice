@@ -4,12 +4,53 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>REGISTER</title>
+    <link rel="stylesheet" href="/register/register.css">
 </head>
 <body>
-    <div class="container">
-        <div class="main-content">
-            <h1> REGISTER </h1>
-        </div>
-    </div>
+    <div class="register-container">
+        <h2>Создать учётную запись</h2>
+        
+        <form action="/register" method="POST">
+          <label for="email">E-mail *</label>
+          <input type="email" id="email" name="email" required>
+          
+          <label for="display-name">Отображаемое имя</label>
+          <input type="text" id="display-name" name="display-name" onfocus="showDescription()" onblur="hideDescription()">
+          <p class="description" id="description-text">Это имя увидят другие пользователи. Можно добавлять специальные символы и эмодзи.</p>
+          
+          <label for="username">Имя пользователя *</label>
+          <input type="text" id="username" name="username" required>
+          
+          <label for="password">Пароль *</label>
+          <input type="password" id="password" name="password" required>
+          
+          <label for="dob">Дата рождения *</label>
+          <div class="dob-container">
+            <select name="day" required>
+              <option value="" disabled selected>День</option>
+              <!-- дни -->
+            </select>
+            <select name="month" required>
+              <option value="" disabled selected>Месяц</option>
+              <!-- месяцы -->
+            </select>
+            <select name="year" required>
+              <option value="" disabled selected>Год</option>
+              <!-- годы -->
+            </select>
+          </div>
+          
+          <div class="checkbox-container">
+            <input type="checkbox" id="newsletter" name="newsletter">
+            <label for="newsletter">Я не против получать электронные письма</label>
+          </div>
+          
+          <button type="submit">Продолжить</button>
+        </form>
+        
+        <p class="terms">Регистрируясь, вы соглашаетесь с <a href="#">Условиями Использования</a> и <a href="#">Политикой Конфиденциальности</a>.</p>
+        <p class="login-link">Уже зарегистрированы? <a href="/login">Вход</a></p>
+      </div>     
+      <script src="/register/register.js"></script>
 </body>
 </html>
