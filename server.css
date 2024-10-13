@@ -1,0 +1,51 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    height: 100vh;
+    overflow: hidden; /* Отключаем общий скролл страницы */
+}
+
+.container {
+    display: flex;
+    height: 100vh; /* Высота экрана */
+}
+
+.sidebar {
+    width: 72px; /* Фиксированная ширина боковой панели */
+    background-color: #add8e6; /* Светло-голубой фон для боковой панели */
+    border-right: 1px solid #ccc; /* Разделительная линия */
+    overflow-y: scroll; /* Оставляем скролл, но будем его скрывать */
+    overflow-x: hidden; /* Убираем горизонтальный скролл */
+    height: 100%; /* Занимаем всю высоту контейнера */
+}
+
+/* Скрываем полосу прокрутки в sidebar для всех браузеров */
+.sidebar::-webkit-scrollbar {
+    width: 0px; /* Устанавливаем ширину скролла в 0 для Chrome, Safari */
+    background: transparent; /* Делаем фон прозрачным */
+}
+
+.sidebar {
+    -ms-overflow-style: none;  /* Отключаем скролл для IE и Edge */
+    scrollbar-width: none;     /* Отключаем скролл для Firefox */
+}
+
+.main-content {
+    flex-grow: 1; /* Эта часть занимает всё оставшееся пространство */
+    background-color: #f08080; /* Светло-красный фон для основного контента */
+    overflow-y: auto; /* Вертикальный скролл для основного контента */
+    overflow-x: hidden; /* Убираем горизонтальный скролл */
+    height: 100%; /* Занимаем всю высоту контейнера */
+}
+
+.iframe-sidebar,
+.iframe-home {
+    width: 100%;
+    height: 100%;
+    border: none;
+}
