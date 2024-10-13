@@ -47,3 +47,12 @@ iframe {
     flex-grow: 1;
     height: 100vh;
 }
+
+.navbar, .userbar, .secondbar, .firstbar, iframe, body, html {
+    overflow: hidden;
+}
+
+::-webkit-scrollbar {
+    display: none;
+}
+  
