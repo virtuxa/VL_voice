@@ -16,6 +16,25 @@ app.use(session({
   cookie: { secure: false }  // Если используешь HTTPS, установи secure: true
 }));
 
+
+const WebSocket = require('ws');
+const wss = new WebSocket.Server({ port: 8080 });
+
+wss.on('connection', (ws) => {
+    ws.on('message', (message) => {
+        const data = JSON.parse(message);
+
+        // Рассылаем сигналинг-сообщения всем подключённым пользователям
+        wss.clients.forEach(client => {
+            if (client !== ws && client.readyState === WebSocket.OPEN) {
+                client.send(JSON.stringify(data));
+            }
+        });
+    });
+});
+
+
+
 // Обслуживание статических файлов из папки static
 app.use(express.static(path.join(__dirname, 'static')));
 

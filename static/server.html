@@ -3,34 +3,219 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Two Frames Layout</title>
-    <link rel="stylesheet" href="/server/server.css">
+    <title>Server with Voice Channel</title>
+    <style>
+        /* Стили для боковой панели и основного содержимого */
+        body {
+            display: flex;
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        /* Стили для боковой панели */
+        .sidebar {
+            width: 20%;
+            background-color: #2c2f33;
+            color: white;
+            padding: 10px;
+        }
+
+        .sidebar h2 {
+            text-align: center;
+        }
+
+        .channel {
+            background-color: #23272a;
+            padding: 10px;
+            margin-bottom: 10px;
+            cursor: pointer;
+        }
+
+        /* Основная часть страницы для чата и голосового канала */
+        .chat {
+            width: 80%;
+            padding: 20px;
+            background-color: #fff;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .messages {
+            flex-grow: 1;
+            overflow-y: scroll;
+            border: 1px solid #ccc;
+            padding: 10px;
+        }
+
+        .input-area {
+            display: flex;
+            margin-top: 10px;
+        }
+
+        .input-area input {
+            flex-grow: 1;
+            padding: 10px;
+            border: 1px solid #ccc;
+        }
+
+        .input-area button {
+            padding: 10px;
+            background-color: #7289da;
+            border: none;
+            color: white;
+            cursor: pointer;
+        }
+
+        /* Стили для голосового канала */
+        .voice-controls {
+            margin-top: 20px;
+        }
+
+        .voice-controls button {
+            padding: 10px;
+            background-color: #43b581;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+    </style>
 </head>
 <body>
-    <div class="container">
-        <div class="firstbar">
-            <div class="container">
-                <a href="#" class="home-link" onclick="loadContent('/home.html'); return false;">
-                    <img src="/images/ui/home.png" alt="Home Icon" class="home-icon">
-                </a>
-              
-            </div>
+    <!-- Боковая панель с каналами -->
+    <div class="sidebar">
+        <h2>Каналы</h2>
+        <div class="channel" id="generalChannel">General</div>
+        <div class="channel" id="voiceChannel">Voice Channel</div>
+    </div>
+
+    <!-- Основная часть страницы для чата -->
+    <div class="chat">
+        <div class="messages" id="messageContainer">
+            <!-- Здесь будут сообщения -->
+        </div>
+        <div class="input-area">
+            <input type="text" id="messageInput" placeholder="Введите сообщение...">
+            <button id="sendMessageButton">Отправить</button>
         </div>
 
-        <div class="secondbar">
-            <div class="sidebar">
-                <h1>sidebar</h1>
-            </div>
-            <div class="userbar">
-                <h1>userbar</h1>
-            </div>
-        </div>
-
-        <div class="thirdbar">
-
+        <!-- Голосовые контролы -->
+        <div class="voice-controls">
+            <button id="joinVoice">Подключиться к голосовому каналу</button>
+            <button id="leaveVoice">Отключиться</button>
         </div>
     </div>
-    <script src="/server/server.js"></script>
 
+    <script>
+        const messageContainer = document.getElementById('messageContainer');
+        const messageInput = document.getElementById('messageInput');
+        const sendMessageButton = document.getElementById('sendMessageButton');
+        const joinVoiceButton = document.getElementById('joinVoice');
+        const leaveVoiceButton = document.getElementById('leaveVoice');
+
+        const socket = new WebSocket('ws://localhost:8080');
+
+        socket.onopen = () => {
+            console.log('Подключен к WebSocket');
+        };
+
+        socket.onmessage = (event) => {
+            const messageElement = document.createElement('div');
+            messageElement.textContent = event.data;
+            messageContainer.appendChild(messageElement);
+            messageContainer.scrollTop = messageContainer.scrollHeight;
+        };
+
+        sendMessageButton.addEventListener('click', () => {
+            const message = messageInput.value;
+            if (message.trim()) {
+                socket.send(message);
+                const messageElement = document.createElement('div');
+                messageElement.textContent = `Вы: ${message}`;
+                messageContainer.appendChild(messageElement);
+                messageContainer.scrollTop = messageContainer.scrollHeight;
+                messageInput.value = '';
+            }
+        });
+
+        // WebRTC логика для голосового канала
+        let localStream;
+        let peerConnection;
+
+        const servers = {
+            iceServers: [
+                {
+                    urls: "stun:stun.l.google.com:19302" // STUN сервер для WebRTC
+                }
+            ]
+        };
+
+        joinVoiceButton.addEventListener('click', async () => {
+            try {
+                // Запрос на доступ к микрофону
+                localStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                console.log('Получен доступ к микрофону:', localStream);
+
+                // Инициализируем PeerConnection
+                peerConnection = new RTCPeerConnection(servers);
+
+                // Добавляем локальный аудиотрек в PeerConnection
+                localStream.getTracks().forEach(track => peerConnection.addTrack(track, localStream));
+
+                // Когда появляется новый ICE-кандидат, отправляем его на сервер
+                peerConnection.onicecandidate = (event) => {
+                    if (event.candidate) {
+                        console.log('ICE-кандидат:', event.candidate);
+                        socket.send(JSON.stringify({ 'candidate': event.candidate }));
+                    }
+                };
+
+                // Когда получаем удалённый медиапоток, добавляем его к аудиовыходу
+                peerConnection.ontrack = (event) => {
+                    console.log('Получен удалённый трек:', event.streams[0]);
+                    const remoteAudio = new Audio();
+                    remoteAudio.srcObject = event.streams[0];
+                    remoteAudio.play();
+                };
+
+                // Создаём предложение (offer) для начала соединения
+                const offer = await peerConnection.createOffer();
+                await peerConnection.setLocalDescription(offer);
+                console.log('Отправляем предложение (offer):', offer);
+                socket.send(JSON.stringify({ 'offer': offer }));
+
+            } catch (error) {
+                console.error('Ошибка подключения к голосовому каналу:', error);
+            }
+        });
+
+        leaveVoiceButton.addEventListener('click', () => {
+            if (peerConnection) {
+                peerConnection.close();
+                console.log('Отключился от голосового канала');
+            }
+            if (localStream) {
+                localStream.getTracks().forEach(track => track.stop());
+            }
+        });
+
+        socket.onmessage = async (event) => {
+            const data = JSON.parse(event.data);
+            if (data.offer) {
+                console.log('Получено предложение (offer):', data.offer);
+                await peerConnection.setRemoteDescription(new RTCSessionDescription(data.offer));
+                const answer = await peerConnection.createAnswer();
+                await peerConnection.setLocalDescription(answer);
+                console.log('Отправляем ответ (answer):', answer);
+                socket.send(JSON.stringify({ 'answer': answer }));
+            } else if (data.answer) {
+                console.log('Получено подтверждение (answer):', data.answer);
+                await peerConnection.setRemoteDescription(new RTCSessionDescription(data.answer));
+            } else if (data.candidate) {
+                console.log('Получен ICE-кандидат:', data.candidate);
+                await peerConnection.addIceCandidate(new RTCIceCandidate(data.candidate));
+            }
+        };
+    </script>
 </body>
 </html>
