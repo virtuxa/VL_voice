@@ -1,8 +1,20 @@
 const express = require('express');
-const { Pool } = require('pg');
+const session = require('express-session');
 const path = require('path');
 const app = express();
 const bodyParser = require('body-parser');
+
+// Настройка body-parser для обработки данных из формы
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
+
+// Настройка сессий (подключается до маршрутов)
+app.use(session({
+  secret: 'yourSecretKey',  // Замени на уникальный ключ
+  resave: false,
+  saveUninitialized: false,
+  cookie: { secure: false }  // Если используешь HTTPS, установи secure: true
+}));
 
 // Обслуживание статических файлов из папки static
 app.use(express.static(path.join(__dirname, 'static')));
@@ -13,22 +25,22 @@ const port = process.env.PORT;
 
 // -------------------------------------------------------
 
-// Настройка подключения к базе данных
+const { Pool } = require('pg');
 const pool = new Pool({
-    user: process.env.DB_USER,
-    host: process.env.DB_HOST,
-    database: process.env.DB_NAME,
-    password: process.env.DB_PASSWORD,
-    port: process.env.DB_PORT,
+    user: process.env.DB_USER || 'postgres',
+    host: process.env.DB_HOST || 'localhost',
+    database: process.env.DB_NAME || 'VL_voice',
+    password: process.env.DB_PASSWORD || '159',
+    port: process.env.DB_PORT || 5432,
 });
 
-// Проверка подключения
-pool.connect((err, client, release) => {
-    if (err) {
-        return console.error('Ошибка подключения к базе данных:', err.stack);
-    }
-    console.log('Успешное подключение к базе данных');
-});
+// Обертка для выполнения запросов
+async function query(text, params) {
+    const res = await pool.query(text, params);
+    return res.rows; // Возвращаем только строки результатов
+}
+
+
 
 // -------------------------------------------------------
 
@@ -55,28 +67,36 @@ app.post('/register', async (req, res) => {
   
   // Авторизация пользователя
   app.post('/login', async (req, res) => {
-    const { email, password } = req.body;
-    try {
-      const result = await pool.query(
-        'SELECT * FROM users WHERE email = $1 AND password = $2',
-        [email, password]
-      );
-  
-      if (result.rows.length > 0) {
-        res.redirect('/home');
-      } else {
-        res.send('Неправильный e-mail или пароль');
-      }
-    } catch (err) {
-      console.error(err);
-      res.send('Ошибка входа');
+    const { username, password } = req.body;
+
+    // Запрос к базе данных для поиска пользователя
+    const result = await query('SELECT * FROM users WHERE username = $1', [username]);
+
+    if (result.length === 0) {
+        console.log('Пользователь не найден:', username);
+        return res.redirect('/login');
     }
-  });
+
+    const user = result[0]; // Получаем первого пользователя
+
+    if (user.password === password) {
+        // Успешная авторизация — сохраняем данные в сессии
+        req.session.userId = user.id;
+        console.log('Авторизация успешна, перенаправляем на главную страницу');
+        return res.redirect('/');
+    } else {
+        console.log('Неправильное имя пользователя или пароль');
+        return res.redirect('/login');
+    }
+});
+
+
+
 
 // -------------------------------------------------------
-
+const authMiddleware = require('./middlewares/authMiddleware');
 // Адресация для /home
-app.get(['/home'], (req, res) => {
+app.get(['/'], authMiddleware, (req, res) => {
     res.sendFile(path.join(__dirname, 'static', 'server.html'));
 });
 
