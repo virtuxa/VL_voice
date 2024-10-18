@@ -1,37 +1,32 @@
-// models/channelModel.js
+// models/inviteModel.js
 const { DataTypes } = require('sequelize');
 const sequelize = require('../utils/db');
 const Server = require('./serverModel');
+const User = require('./userModel');
 
-const Channel = sequelize.define('Channel', {
-    name: {
+const Invite = sequelize.define('Invite', {
+    token: {
         type: DataTypes.STRING,
         allowNull: false
-    },
-    type: {
-        type: DataTypes.ENUM('text', 'voice'),
-        defaultValue: 'text'
     },
     serverId: {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
             model: Server,
-            key: 'id',
-            onDelete: 'CASCADE'
+            key: 'id'
         }
     },
-    categoryId: {
+    inviterId: {
         type: DataTypes.INTEGER,
-        allowNull: true,
+        allowNull: false,
         references: {
-            model: 'Categories',
-            key: 'id',
-            onDelete: 'SET NULL'
+            model: User,
+            key: 'id'
         }
     }
 }, {
     timestamps: true
 });
 
-module.exports = Channel;
+module.exports = Invite;

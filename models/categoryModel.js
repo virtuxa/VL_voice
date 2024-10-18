@@ -1,16 +1,13 @@
-// models/channelModel.js
+// models/categoryModel.js
 const { DataTypes } = require('sequelize');
 const sequelize = require('../utils/db');
 const Server = require('./serverModel');
+const Channel = require('./channelModel');
 
-const Channel = sequelize.define('Channel', {
+const Category = sequelize.define('Category', {
     name: {
         type: DataTypes.STRING,
         allowNull: false
-    },
-    type: {
-        type: DataTypes.ENUM('text', 'voice'),
-        defaultValue: 'text'
     },
     serverId: {
         type: DataTypes.INTEGER,
@@ -20,18 +17,13 @@ const Channel = sequelize.define('Channel', {
             key: 'id',
             onDelete: 'CASCADE'
         }
-    },
-    categoryId: {
-        type: DataTypes.INTEGER,
-        allowNull: true,
-        references: {
-            model: 'Categories',
-            key: 'id',
-            onDelete: 'SET NULL'
-        }
     }
 }, {
     timestamps: true
 });
 
-module.exports = Channel;
+// Настроим связь "один ко многим" между Category и Channel
+Category.hasMany(Channel, { foreignKey: 'categoryId', as: 'channels' });
+Channel.belongsTo(Category, { foreignKey: 'categoryId', as: 'category' });
+
+module.exports = Category;

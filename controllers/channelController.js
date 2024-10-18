@@ -3,10 +3,12 @@ const Channel = require('../models/channelModel');
 const Server = require('../models/serverModel');
 const Permission = require('../models/permissionsModel');
 const ServerMember = require('../models/serverMemberModel');
+const Notification = require('../models/notificationModel');  // Импорт модели уведомлений
+const logController = require('./logController');  // Импорт лог-контроллера
 
 exports.createChannel = async (req, res) => {
     try {
-        const { serverId, name, type } = req.body;
+        const { serverId, name, type, categoryId } = req.body;
         const userId = req.user.id;
 
         // Найдём сервер
@@ -29,13 +31,32 @@ exports.createChannel = async (req, res) => {
             }
         }
 
-        // Создаем канал
+        // Проверка наличия имени в запросе
+        if (!name) {
+            return res.status(400).json({ message: 'Название канала обязательно' });
+        }
+
+        // Создание канала с возможностью привязки к категории
         const newChannel = await Channel.create({
             name,
             type,
-            serverId: server.id
+            serverId,
+            categoryId: categoryId || null
         });
 
+        // Создадим уведомление для всех участников сервера
+        const members = await ServerMember.findAll({ where: { serverId } });
+        for (const member of members) {
+            await Notification.create({
+                message: `Новый канал ${name} был создан`,
+                userId: member.userId
+            });
+        }
+
+        // Логирование действия
+        await logController.createLog('create_channel', `Создан канал ${name}`, serverId, userId);
+
+        // Отправляем ответ только после завершения всех операций
         res.status(201).json({ message: 'Канал успешно создан', channel: newChannel });
     } catch (error) {
         console.error('Ошибка создания канала:', error);

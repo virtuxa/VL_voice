@@ -2,6 +2,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/userModel');
 const config = require('../config/config');
+const Profile = require('../models/profileModel');
 
 // Регистрация пользователя
 exports.register = async (req, res) => {
@@ -10,10 +11,18 @@ exports.register = async (req, res) => {
 
         const hashedPassword = await bcrypt.hash(password, 10);
 
+        // Создание пользователя
         const newUser = await User.create({
             username,
             email,
             password: hashedPassword
+        });
+
+        // Создание профиля для пользователя
+        await Profile.create({
+            userId: newUser.id,
+            bio: '',  // Биография по умолчанию пустая
+            avatar: '',  // Изображение по умолчанию
         });
 
         res.status(201).json(newUser);

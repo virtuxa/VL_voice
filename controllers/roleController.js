@@ -3,6 +3,7 @@ const ServerMember = require('../models/serverMemberModel');
 const Role = require('../models/roleModel');
 const Server = require('../models/serverModel');
 const UserRole = require('../models/userRoleModel');
+const Permission = require('../models/permissionsModel'); 
 
 exports.createRole = async (req, res) => {
     try {
@@ -25,6 +26,14 @@ exports.createRole = async (req, res) => {
             name,
             permissions,
             serverId: server.id
+        });
+
+        // Создание прав для новой роли
+        await Permission.create({
+            roleId: newRole.id,
+            canCreateChannel: permissions.includes('create_channel'),
+            canEditChannel: permissions.includes('edit_channel'),
+            canDeleteChannel: permissions.includes('delete_channel')
         });
 
         res.status(201).json({ message: 'Роль успешно создана', role: newRole });

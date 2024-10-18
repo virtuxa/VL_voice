@@ -1,16 +1,17 @@
-// models/channelModel.js
+// models/logModel.js
 const { DataTypes } = require('sequelize');
 const sequelize = require('../utils/db');
 const Server = require('./serverModel');
+const User = require('./userModel');
 
-const Channel = sequelize.define('Channel', {
-    name: {
+const Log = sequelize.define('Log', {
+    action: {
         type: DataTypes.STRING,
         allowNull: false
     },
-    type: {
-        type: DataTypes.ENUM('text', 'voice'),
-        defaultValue: 'text'
+    description: {
+        type: DataTypes.STRING,
+        allowNull: true
     },
     serverId: {
         type: DataTypes.INTEGER,
@@ -21,17 +22,16 @@ const Channel = sequelize.define('Channel', {
             onDelete: 'CASCADE'
         }
     },
-    categoryId: {
+    userId: {
         type: DataTypes.INTEGER,
         allowNull: true,
         references: {
-            model: 'Categories',
-            key: 'id',
-            onDelete: 'SET NULL'
+            model: User,
+            key: 'id'
         }
     }
 }, {
     timestamps: true
 });
 
-module.exports = Channel;
+module.exports = Log;

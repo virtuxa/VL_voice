@@ -1,6 +1,7 @@
 // controllers/serverController.js
 const Server = require('../models/serverModel');
 const ServerMember = require('../models/serverMemberModel');
+const Channel = require('../models/channelModel');
 
 exports.createServer = async (req, res) => {
     try {
@@ -51,6 +52,9 @@ exports.deleteServer = async (req, res) => {
 
         // Удалим всех участников сервера
         await ServerMember.destroy({ where: { serverId } });
+
+        // Удалим все каналы, связанные с сервером
+        await Channel.destroy({ where: { serverId } });
 
         // Удалим сервер
         await server.destroy();

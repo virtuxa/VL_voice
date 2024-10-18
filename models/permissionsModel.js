@@ -16,13 +16,21 @@ const Permission = sequelize.define('Permission', {
         type: DataTypes.BOOLEAN,
         defaultValue: false
     },
+    canManageMembers: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false
+    },
+    canEditRoles: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false
+    },
     roleId: {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
             model: Role,
             key: 'id',
-            onDelete: 'CASCADE'  // Каскадное удаление прав при удалении роли
+            onDelete: 'CASCADE'
         }
     }
 }, {
